@@ -4,6 +4,9 @@
 ██║╚██╔╝██║██║   ██║██║╚██╗██║██║██║╚██╗██║██║╚██╗██║
 ██║ ╚═╝ ██║╚██████╔╝██║ ╚████║██║██║ ╚████║██║ ╚████║
 ╚═╝     ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═══╝
+               M U N I N N
+        Embedded Memory Copilot
+
 Muninn — Embedded Memory Copilot
 
 A Cloudflare Workers AI application with persistent memory using Durable Objects
