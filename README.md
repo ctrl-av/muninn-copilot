@@ -6,15 +6,15 @@ Muninn is a stateful engineering copilot built on Cloudflare Workers AI, Durable
 
 This project was built as part of the Cloudflare AI application assignment and demonstrates the following:
 
-LLM inference using Workers AI
+ - LLM inference using Workers AI
 
-Durable Objects for persistent memory
+ - Durable Objects for persistent memory
 
-Worker + DO coordination patterns
+ - Worker + DO coordination patterns
 
-A simple, functional chat UI
+ - A simple, functional chat UI
 
-A full edge-native architecture
+ - A full edge-native architecture
 
 Features
 Persistent Memory with Durable Objects
@@ -22,15 +22,15 @@ Persistent Memory with Durable Objects
 Each project ID is backed by its own MuninnSession Durable Object.
 Muninn stores:
 
-Long-term notes
+ - Long-term notes
 
-Goals
+ - Goals
 
-Tasks
+ - Tasks
 
-Architectural decisions
+ - Architectural decisions
 
-Conversation history
+ - Conversation history
 
 This allows the assistant to remember individual engineering projects over time instead of treating every request as stateless.
 
