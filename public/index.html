@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Muninn — Embedded Memory Copilot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+      body { font-family: system-ui, sans-serif; max-width: 800px; margin: 0 auto; padding: 1rem; }
+      #log { border: 1px solid #ccc; padding: 1rem; height: 400px; overflow-y: auto; margin-bottom: 1rem; white-space: pre-wrap; }
+      .msg-user { color: #005bbb; margin-bottom: 0.5rem; }
+      .msg-ai { color: #222; margin-bottom: 1rem; }
+      input, textarea { width: 100%; margin-bottom: 0.5rem; }
+      button { padding: 0.4rem 0.7rem; }
+    </style>
+  </head>
+  <body>
+    <h1>Muninn — Embedded Memory Copilot</h1>
+    <p>Give Muninn a project ID and describe what you're building (e.g., STM32 flight computer, AR glasses, etc.).</p>
+
+    <input id="projectId" placeholder="Project ID (e.g. flight-computer)" />
+
+    <div id="log"></div>
+
+    <textarea id="input" rows="3" placeholder="Describe what you want to build..."></textarea><br />
+    <button id="send">Send</button>
+
+    <script>
+      const projectIdInput = document.getElementById("projectId");
+      const input = document.getElementById("input");
+      const sendBtn = document.getElementById("send");
+      const log = document.getElementById("log");
+
+      function addMessage(cls, text) {
+        const div = document.createElement("div");
+        div.className = cls;
+        div.textContent = text;
+        log.appendChild(div);
+        log.scrollTop = log.scrollHeight;
+      }
+
+      sendBtn.onclick = async () => {
+        const projectId = projectIdInput.value || "default";
+        const msg = input.value.trim();
+        if (!msg) return;
+
+        addMessage("msg-user", "> " + msg);
+        input.value = "";
+
+        const res = await fetch("/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ projectId, message: msg }),
+        });
+        const data = await res.json();
+        addMessage("msg-ai", data.reply || "[no reply]");
+      };
+    </script>
+  </body>
+</html>

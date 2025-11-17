@@ -3,13 +3,40 @@
  * https://developers.cloudflare.com/workers/wrangler/configuration/
  */
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "muninn-copilot",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-11-15",
-	"observability": {
-		"enabled": true
-	}
+  "$schema": "https://raw.githubusercontent.com/cloudflare/workers-sdk/main/packages/wrangler/config-schema.json",
+  "name": "muninn-copilot",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-11-16",
+
+  // Bind Workers AI as env.AI
+  "ai": {
+    "binding": "AI"
+  },
+
+  // Durable Object binding
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "MUNINN_PROJECTS",
+        "class_name": "MuninnSession"
+      }
+    ]
+  },
+
+  // Register Durable Object migrations
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_classes": ["MuninnSession"]
+    }
+  ],
+
+  // Static Assets
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS"
+  }
+
 	/**
 	 * Smart Placement
 	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
