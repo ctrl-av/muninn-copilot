@@ -1,145 +1,137 @@
-Muninn — Embedded Memory Copilot
+# Muninn — Embedded Memory Copilot
 
-A Cloudflare Workers AI application with persistent memory using Durable Objects
+Muninn is a stateful engineering assistant built using Cloudflare Workers, Workers AI, and Durable Objects. It provides persistent project memory and specialized reasoning for embedded systems, firmware development, sensor fusion, real-time control, and related engineering workflows.
 
-Muninn is a stateful engineering copilot built on Cloudflare Workers AI, Durable Objects, and static assets served at the edge. The name comes from Muninn, one of Odin’s ravens associated with “memory.” The application acts as a long-term project assistant that remembers embedded systems, firmware, AR/AI pipelines, and hardware–software design work across sessions.
+The goal is to demonstrate a complete AI-powered application using Cloudflare’s platform: an LLM-powered backend, long-term storage via Durable Objects, and a minimal frontend delivered at the edge.
 
-This project was built as part of the Cloudflare AI application assignment and demonstrates the following:
+---
 
- - LLM inference using Workers AI
+## Features
 
- - Durable Objects for persistent memory
+### Persistent Memory
 
- - Worker + DO coordination patterns
-
- - A simple, functional chat UI
-
- - A full edge-native architecture
-
-Features
-Persistent Memory with Durable Objects
-
-Each project ID is backed by its own MuninnSession Durable Object.
+Each project ID corresponds to its own Durable Object instance.
 Muninn stores:
 
- - Long-term notes
+* goals
+* tasks
+* notes
+* architecture ideas
+* conversation history
 
- - Goals
+This enables long-term continuity across sessions.
 
- - Tasks
+### Workers AI (Llama 3.3)
 
- - Architectural decisions
+The assistant uses Cloudflare’s Llama 3.3 70B model.
+Responses are structured in three sections:
 
- - Conversation history
+1. Brief analysis
+2. Suggested architecture / approach
+3. Concrete next tasks
 
-This allows the assistant to remember individual engineering projects over time instead of treating every request as stateless.
+### Minimal Frontend
 
-Workers AI (Llama 3.3) for Reasoning
+A simple HTML/JavaScript interface is served directly from Cloudflare’s static asset binding.
+Messages are sent to `/api/chat` and rendered in the page.
 
-Muninn uses Workers AI with the following model:
+### Edge-Native Architecture
 
-@cf/meta/llama-3.3-70b-instruct-fp8-fast
+* Worker handles routing and AI inference
+* Durable Object maintains isolated state
+* Static assets served from `/public`
+* Everything deployed globally on Cloudflare’s network
 
+---
 
-The system prompt specializes the model toward embedded software, STM32 development, sensor fusion, real-time control systems, AR glasses pipelines, and game-engine style systems programming.
+## Example Interaction
 
-Frontend Served from Cloudflare
+**User**
+“I want to build an STM32 flight controller.”
 
-A minimal HTML/JS interface is served from /public using Cloudflare’s static asset binding.
-The UI communicates directly with the Worker through /api/chat.
+**Muninn**
 
-Architecture Overview
-Static Frontend (Cloudflare Assets)
-      │
-      ▼
-Cloudflare Worker (index.ts)
-  - routes requests
-  - handles AI calls
-  - forwards memory ops to DO
-      │
-      ├───────────────────────────────┐
-      │                               │
-      ▼                               ▼
-Durable Object (MuninnSession)      Workers AI
-- persistent per-project state       - Llama 3.3 inference
-
-Example Interaction
-
-User Input
-Project ID: flight-controller
-Message: “I want to build an STM32 flight controller.”
-
-Muninn Response
-
+```
 ### Brief Analysis
-Building an STM32 flight controller requires understanding embedded systems, control loops, and real-time sensor processing. STM32 devices are well-suited for this because of their peripheral set and performance. Important early decisions include selecting the MCU, choosing sensors, and deciding on the control architecture.
+Building an STM32 flight controller involves real-time processing, sensor integration, and control algorithms. STM32 devices are commonly used for this because of their peripheral set and performance.
 
 ### Suggested Architecture / Approach
-- Microcontroller: Select an STM32 part with sufficient performance (e.g., STM32F303 series).
-- Sensors: Use an IMU (accelerometer + gyroscope), and optionally a magnetometer and barometer.
-- Sensor Fusion: Implement a Kalman filter or complementary filter for attitude estimation.
-- Control Algorithm: Use PID loops or a cascaded controller for stabilization.
-- Telemetry: Add an RF or serial telemetry link for data logging and tuning.
+- Select a specific STM32 part (e.g., STM32F303 series).
+- Use an IMU for attitude estimation.
+- Implement a complementary filter or Kalman filter for sensor fusion.
+- Use PID or cascaded controllers for stabilization.
+- Add telemetry for tuning and logging.
 
 ### Concrete Next Tasks
-- Select the exact STM32 variant based on available peripherals.
-- Bring up an STM32CubeMX project with I2C/SPI and a periodic timer interrupt.
-- Interface with the IMU and verify raw sensor outputs via UART.
-- Implement a simple complementary filter to estimate roll/pitch angles.
-- Build an initial PID loop targeting stable orientation on a test rig.
-- Add data logging to evaluate filter accuracy and controller response.
+- Create an STM32CubeMX project with I2C/SPI and timer interrupts.
+- Bring up the IMU and stream sensor data over UART.
+- Implement basic attitude estimation.
+- Prototype initial control loops and test on a bench setup.
+- Iterate on gains using logged telemetry.
+```
 
-Local Development
+---
+
+## Development
 
 Install dependencies:
 
+```
 npm install
+```
 
+Run locally:
 
-Start the development server:
-
+```
 npm run dev
+```
 
+Open in browser:
 
-This starts the Worker at:
-
+```
 http://localhost:8787/
+```
 
+### Endpoints
 
-The chat UI is served at /.
-The AI endpoint is at /api/chat.
+* `/` — Frontend UI
+* `/api/chat` — AI + stateful memory
+* `/api/health` — Health check
 
-Deployment
+---
+
+## Deployment
 
 Deploy to Cloudflare:
 
+```
 npm run deploy
+```
 
+---
 
-Cloudflare will generate a Workers.dev URL for the live application.
+## Project Structure
 
-Project Structure
-muninn-copilot/
-├── public/
-│   └── index.html
-├── src/
-│   ├── index.ts
-│   └── MuninnSession.ts
-├── wrangler.jsonc
-└── package.json
+```
+public/
+  index.html          # UI
+src/
+  index.ts            # Worker entry point
+  MuninnSession.ts    # Durable Object for memory
+wrangler.jsonc        # Cloudflare configuration
+package.json
+```
 
-Core Technologies
+---
 
-Cloudflare Workers
+## Purpose
 
-Cloudflare Workers AI (Llama 3.3)
+This project satisfies Cloudflare’s AI application assignment requirements:
 
-Durable Objects
+* Uses Workers AI (Llama 3.3)
+* Includes workflow/coordination via Durable Objects
+* Provides user input via a simple chat UI
+* Maintains persistent memory/state per project
 
-Static asset binding
+It is also aligned with my background in embedded systems, firmware, and AI-assisted development tools.
 
-TypeScript
-
-Purpose
-
-The goal of this project was to build an AI-powered application that uses Cloudflare's full stack: Workers, Workers AI, Durable Objects, and real user interaction. Muninn is designed around workflows I use in embedded systems development—STM32 firmware, sensor interfacing, control systems, and AI/AR processing—which makes it both a technical demonstration and a tool directly relevant to the type of engineering work I do.
